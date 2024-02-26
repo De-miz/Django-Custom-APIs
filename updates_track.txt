@@ -1,0 +1,34 @@
+
+# FOLLOW GITHUB ISSUES OF THIS REPO TO FOLLOW UP
+
+
+S1
+# THESE ARE RECENT UPDATES
+
+*
+
+
+
+S2
+# THESE UPDATES ARE YET TO HAPPEN
+
+*
+
+
+
+
+S3
+# CURRENT CHANGES (these could be changes from S1 and S2, must be deleted before commit S1 will replace it)
+
+* Beta 0.1
+
+
+
+S4
+# FUTURE UPDATES 
+
+* Beta 5 release
+* Twitter API
+* Other APIs (Youtube, IG, Facebook etc)
+* Payment API integrated
+* comment feature added

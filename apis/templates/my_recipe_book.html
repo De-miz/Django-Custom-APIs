@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recipe Data</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/main.css">
+</head>
+<body>
+    <h1 class="form-lv1-title">My Recipe Book</h1>
+    <div align="center">&nbsp;<span id="request-feedback"></span>&nbsp;</div>
+    <form class="primary-form-layout">
+        <input placeholder="Dish name" class="mrb-theme-online-input-field" id="dish-name" >
+        <input placeholder="Image url" class="mrb-theme-online-input-field" id="primary-image" >
+        <div class="in-field-button-container">
+            <input id="other-image-urls-field" placeholder="Other image urls" class="mrb-theme-online-input-field" >
+            <button id="add-image-urls" class="in-field-button mrb-theme-btn" type="button" >add +<span id="number-of-other-image-urls">0</span></button>
+        </div>
+        <select class="mrb-theme-btn" id="select-ingredients">
+            <option>Pepper</option>
+            <option>Maggi Cube</option>
+            <option>Tomatoes</option>
+            <option>Beef</option>
+        </select>
+        <div class="mrb-theme-selections-container" id="selected-items-container"></div>
+        <button class="mrb-theme-btn" type="button" onclick="submit_form()">Submit</button>
+        <button class="mrb-theme-btn" type="reset">Clear</button>
+    </form>
+
+    <script>
+        let other_image_urls = [];
+        let ingredients = [];
+        document.getElementById('add-image-urls').onclick = () => {
+            elem = document.getElementById('other-image-urls-field');
+            if (elem.value) {
+                if (!other_image_urls.includes(elem.value)) {
+                    other_image_urls.push(elem.value);
+                }
+                elem.value = '';
+                document.getElementById('number-of-other-image-urls').innerHTML = other_image_urls.length;
+            }
+        }
+
+        const select_ingredients = document.getElementById('select-ingredients');
+        select_ingredients.onchange = () => {
+            if (!ingredients.includes(select_ingredients.value)) {
+                document.getElementById('selected-items-container').innerHTML += 
+                `
+                <span class="mrb-selected-item" onclick="deselect(this)">${select_ingredients.value}</span>
+                `;
+                ingredients.push(select_ingredients.value);
+            }
+        }
+
+        const deselect = (elem) => {
+            elem.style.display = 'none';
+            ingredients.splice(ingredients.indexOf(elem.innerText), 1);
+        }
+
+
+        const js_communicate_python = function ({send={}, callback=(function(){}), method='POST', path='/my-recipe-book-admin-dashaboard/'}) {
+            let params = new URLSearchParams(send);
+            let url = method == 'GET' ? `${path}?${params}`: path
+            fetch (
+                url, 
+                {
+                    method: method, 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }, 
+                    body: (method == 'POST') ? JSON.stringify(send): null
+                }
+            ) 
+            .then (response => response.json()) 
+            .then (responseData => {
+                responseData.callback = callback;
+                responseData.callback();
+                console.log(responseData);
+            }) 
+            .catch (error => {
+                console.log('error here', error);
+            })
+        }
+
+
+        const submit_form = () => {
+            let feedback_msg = document.getElementById('request-feedback');
+            let dishName = document.getElementById('dish-name');
+            let primaryImg = document.getElementById('primary-image');
+            data = {
+                dish_name: dishName.value,
+                primary_image: primaryImg.value,
+                other_image_urls: other_image_urls, 
+                ingredients: ingredients
+            }
+            js_communicate_python(
+                {
+                    send: data, 
+                    callback: (function(){
+                        const feedback = (msg) => {
+                            feedback_msg.innerText = msg;
+                            let emptyFeedback = setTimeout(() => {
+                                feedback_msg.innerText = '';
+                            }, 2500);
+                        }
+                        if (this.status) {
+                            feedback('Added Successfully');
+                        } else {
+                            feedback('Something went wrong');
+                        }
+                    })
+                } 
+            )
+        }
+    </script>
+</body>
+</html>

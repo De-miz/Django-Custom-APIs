@@ -1,0 +1,10 @@
+
+* BETA RELEASE * [2024-02-25]
+
+
+==> beta 0.1
+
+* Project started
+* Created mysql database for my-recipe-book api
+* Created my-recipe-book admin dashboard for data entry
+*
